@@ -57,7 +57,7 @@ public class Handle implements Runnable {
 					response.outNotExist();
 				} else {
 					// 非静态文件
-					if (!isStaticFile(file.getName())) {
+					if (!contain(Config.STATIC_FILES,file.getName())) {
 						response.outIllegalType();
 					} else {
 						//if(预览参数为ture) 输入预览信息outPreview
@@ -103,15 +103,12 @@ public class Handle implements Runnable {
 	 * @param str 是文件名
 	 * @return 
 	 */
-	private boolean isStaticFile(String str) {
-		if (str.endsWith(".txt") || str.endsWith(".docx")
-				|| str.endsWith(".zip") || str.endsWith(".html")
-				|| str.endsWith(".xls") || str.endsWith(".pdf")
-				|| str.endsWith(".jpg") || str.endsWith(".png")
-				|| str.endsWith(".rar")) {
-			return true;
-		} else {
-			return false;
+	private boolean contain(String[] fileLastNames,String str) {
+		String lastName = str.substring(str.indexOf("."), str.length());
+		for(String temp:fileLastNames){
+			if(temp == lastName)
+				return true;
 		}
+		return false;
 	}
 }

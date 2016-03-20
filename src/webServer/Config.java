@@ -7,4 +7,8 @@ package webServer;
 public class Config {
 	public static final int PORT = 80;
 	public static final String ROOT = "d";
+	public static final String[] STATIC_FILES = 
+		{"jpg","png","txt","doc","docx","xls","pdf","ini","xml","html",
+		"JPG","PNG","TXT","DOC","DOCX","XLS","PDF","INI","XML","HTML"};
+	
 }
