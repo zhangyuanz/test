@@ -3,10 +3,17 @@ package webServer;
 import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
-
+/**
+ * 该类是完成逻辑控制，业务流程处理，实现runable接口，专门执行逻辑任务
+ * @author xmubaga
+ *
+ */
 public class Handle implements Runnable {
 	private Socket clientSocket;
-
+    /**
+     * 构造方法，初始化客服端socket对象
+     * @param clientSocket
+     */
 	public Handle(Socket clientSocket) {
 		this.clientSocket = clientSocket;
 	}
@@ -66,9 +73,14 @@ public class Handle implements Runnable {
 		}
 	}
 	/**
-	 * 将一个URL转换为路径，加以限制条件
+	 * 将一个URL转换为路径，并允许用户输入如果是空，即只输入主机ip，则访问默认跟目录，如果是根目录没有添加“/”自动添加
+	 * <pre>
+	 * localhost =  "D:/"
+	 * localhost/d = "D:/"
+	 * localhost/d/ = "D:/"
+	 * </pre>
 	 * 
-	 * @param url 可
+	 * @param url是http请求经过封装的url
 	 */
 	private String toPath(String url){
 		String gen = Config.ROOT+":/";
@@ -88,8 +100,8 @@ public class Handle implements Runnable {
 	/**
 	 * 判断文件是否为静态文件
 	 * 
-	 * @param str
-	 * @return
+	 * @param str 是文件名
+	 * @return 
 	 */
 	private boolean isStaticFile(String str) {
 		if (str.endsWith(".txt") || str.endsWith(".docx")

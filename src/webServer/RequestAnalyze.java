@@ -44,7 +44,7 @@ public class RequestAnalyze {
 			this.analyze(clientsocket);
 		} catch (IOException e) {
 			// 此处可添加日志记录解析失败
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 	}
 
@@ -57,8 +57,7 @@ public class RequestAnalyze {
 	 */
 	public void analyze(Socket clientSocket) throws IOException {
 
-		BufferedReader in = new BufferedReader(new InputStreamReader(
-				clientSocket.getInputStream()));
+		BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
 		String firstLine = in.readLine();// 请求行
 		analyzeFirstLine(firstLine);

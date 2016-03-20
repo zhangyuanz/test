@@ -13,7 +13,7 @@ public class Controller {
 	 * 控制器自启动main方法
 	 * @param args
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args)  {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 		String command = null;
 		HttpServer httpServer = null;
@@ -45,8 +45,10 @@ public class Controller {
 				try {
 					reader.close();
 				} catch (IOException e) {
-					e.printStackTrace();
+					//e.printStackTrace();
+					//thow new IOException("流关闭异常");
 				}
+				
 			}
 		}
 		

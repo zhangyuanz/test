@@ -12,7 +12,7 @@ public class Response {
 	private PrintWriter pw;
 
 	/**
-	 * 此构造方法注入客服端socket对象
+	 * 此构造方法注入客服端socket
 	 * 
 	 * @param clsk
 	 */
@@ -21,7 +21,8 @@ public class Response {
 		try {
 			pw = new PrintWriter(clsk.getOutputStream(), true);
 		} catch (IOException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
+			System.out.println("创建socket输出流异常！");
 		}
 	}
 
@@ -43,7 +44,7 @@ public class Response {
 	}
 
 	/**
-	 * 向客服端反馈请求方法不接受的信息
+	 * 向客服端反馈请求方法不对的信息
 	 * 
 	 */
 	public void outNotGet() {
@@ -52,7 +53,7 @@ public class Response {
 	}
 
 	/**
-	 * 响应文件类型不支持信息
+	 * 向客服端反应文件类型不支持的信息
 	 */
 	public void outIllegalType() {
 		pw.println("HTTP/1.1 404 Not Supported fileType");
@@ -113,7 +114,12 @@ public class Response {
 		}
 		pw.close();
 	}
-
+	/**
+	 * 为客服端提供请求的文件的下载流
+	 * 
+	 * @param file 是请求的资源
+	 * @throws IOException
+	 */
 	public void outFile(File file) throws IOException {
 		pw.println("HTTP/1.1 200 OK");
 		pw.println("Content-Type:application/x-msdownload;charset=UTF-8");
@@ -136,7 +142,9 @@ public class Response {
 			}		
 		}
 	}
-
+	/**
+	 * 像客服端提供请求资源的预览流
+	 */
 	public void outPreviewFile() {
 	}
 
