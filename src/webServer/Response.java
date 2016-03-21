@@ -1,8 +1,6 @@
 package webServer;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -98,20 +96,7 @@ public class Response {
 		pw.println("Content-Type:text/html;charset=UTF-8");
 		pw.println();
 		pw.println("您好！您访问的目录下的所有文件如下:<br>");
-		pw.println("<a href='javascript:history.go(-1)'>返回上级</a><br>");
-		for (String str : file.list()) {
-			
-			String gen = "D:/";
-			String href = gen ;
-			if(str.indexOf('.')<0){
-				href = str +  "/";
-				pw.println("<a href='" + href + "'><font color = 'red'>" + str + "</font></a><br>");
-			}else{
-				href = str;
-				pw.println("<a href='" + href + "'>" + str + "</a><br>");
-			}			
-			//拓展为有超链接的，点击可直接下载
-		}
+		
 		pw.close();
 	}
 	/**
@@ -120,22 +105,12 @@ public class Response {
 	 * @param file 是请求的资源
 	 * @throws IOException
 	 */
-	public void outFile(File file) throws IOException {
+	public void outFile(File file) {
 		pw.println("HTTP/1.1 200 OK");
 		pw.println("Content-Type:application/x-msdownload;charset=UTF-8");
 		pw.println();
-		//打开此文件，将类容写入socket输出流
-		FileInputStream in = null;
 		try {
-			in = new FileInputStream(file);
-			byte[] bytes = new byte[4096];
-			while( in.read(bytes) != -1){
-				System.out.println("读取的内容是："+new String(bytes));
-				pw.println(new String(bytes));
-			}
-			pw.println();
-		} catch (FileNotFoundException e) {		
-			e.printStackTrace();
+			new FileOperator().file2OutputStream(file, pw);
 		}finally{
 			if(pw!=null){
 				pw.close();	

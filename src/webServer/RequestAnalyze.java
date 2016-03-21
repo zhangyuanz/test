@@ -16,7 +16,6 @@ public class RequestAnalyze {
 	private String method = null;// 请求方法
 	private String protocol = null;// 协议版本
 	private String requestURL = null;// 请求的URI地址 在HTTP请求的第一行的请求方法后面
-	private String fileType = null;
 
 	private String host = null;// 请求的主机信息
 	private String connection = null;// Http请求连接状态信息 对应HTTP请求中的Connection
@@ -60,21 +59,22 @@ public class RequestAnalyze {
 		BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
 		String firstLine = in.readLine();// 请求行
+		System.out.println("firstLine:"+firstLine);
 		analyzeFirstLine(firstLine);
 
 		String headLine = null;
 		for (int i = 0; i < 8; i++) {
 			headLine = in.readLine();
-			System.out.println("headLine:" + headLine);
+			System.out.println(headLine);
 			analyzeHeadLine(headLine);
 			if (headLine == "\n\r") {
 				break;
 			}
-			if (headLine.startsWith("Connection")) {
+			if(headLine == null){
 				break;
 			}
 		}
-		System.out.println("处理完请求头了");
+		System.out.println("封装完请求头了");
 		// String lastLine = in.readLine();
 		// analyzeLastLine(lastLine);
 
@@ -86,6 +86,9 @@ public class RequestAnalyze {
 	 * @param firstLine
 	 */
 	public void analyzeFirstLine(String firstLine) {
+		if(firstLine == null){
+			return;
+		}
 		int x = firstLine.indexOf('/');
 		int y = firstLine.lastIndexOf('/');
 		method = firstLine.substring(0, x - 1);
@@ -103,6 +106,9 @@ public class RequestAnalyze {
 	 * @param headLine
 	 */
 	public void analyzeHeadLine(String headLine) {
+		if(headLine == null){
+			return;
+		}
 		int max = headLine.length();
 		if (headLine.startsWith("Host")) {
 			host = headLine.substring(6, max);
@@ -165,21 +171,6 @@ public class RequestAnalyze {
 	 */
 	public void setProtocol(String protocol) {
 		this.protocol = protocol;
-	}
-
-	/**
-	 * @return the fileType
-	 */
-	public String getFileType() {
-		return fileType;
-	}
-
-	/**
-	 * @param fileType
-	 *            the fileType to set
-	 */
-	public void setFileType(String fileType) {
-		this.fileType = fileType;
 	}
 
 	/**
