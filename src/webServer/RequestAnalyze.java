@@ -5,6 +5,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * 将http请求信息封装打包，以便后续使用
  * 
@@ -12,6 +15,7 @@ import java.net.Socket;
  *
  */
 public class RequestAnalyze {
+	final Logger logger = LoggerFactory.getLogger(RequestAnalyze.class);
 	// 以下属性只提供getter方法不提供setter方法
 	private String method = null;// 请求方法
 	private String protocol = null;// 协议版本
@@ -42,8 +46,7 @@ public class RequestAnalyze {
 		try {
 			this.analyze(clientsocket);
 		} catch (IOException e) {
-			// 此处可添加日志记录解析失败
-			//e.printStackTrace();
+			logger.info("请求信息封装失败！");
 		}
 	}
 
@@ -57,15 +60,15 @@ public class RequestAnalyze {
 	public void analyze(Socket clientSocket) throws IOException {
 
 		BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-
+		logger.info("开始封装客服端请求了...");
 		String firstLine = in.readLine();// 请求行
-		System.out.println("firstLine:"+firstLine);
+		logger.info("firstLine:"+firstLine);
 		analyzeFirstLine(firstLine);
 
 		String headLine = null;
 		for (int i = 0; i < 8; i++) {
 			headLine = in.readLine();
-			System.out.println(headLine);
+			logger.info(headLine);
 			analyzeHeadLine(headLine);
 			if (headLine == "\n\r") {
 				break;
@@ -74,10 +77,10 @@ public class RequestAnalyze {
 				break;
 			}
 		}
-		System.out.println("封装完请求头了");
+		
 		// String lastLine = in.readLine();
 		// analyzeLastLine(lastLine);
-
+		logger.info("请求已封装完成");
 	}
 
 	/**
@@ -92,12 +95,12 @@ public class RequestAnalyze {
 		int x = firstLine.indexOf('/');
 		int y = firstLine.lastIndexOf('/');
 		method = firstLine.substring(0, x - 1);
-		System.out.println("请求方法是:" + method);
+		logger.info("请求方法是:" + method);
 		requestURL = firstLine.substring(x, y - 5);
-		System.out.println("请求URI是:" + requestURL);
+		logger.info("请求URI是:" + requestURL);
 		
 		protocol = firstLine.substring(y - 4, firstLine.length());
-		System.out.println("请求协议是:" + protocol);
+		logger.info("请求协议是:" + protocol);
 	}
 
 	/**

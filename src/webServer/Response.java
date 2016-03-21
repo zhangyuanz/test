@@ -5,7 +5,11 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class Response {
+	final Logger logger = LoggerFactory.getLogger(FileOperator.class);
 	private Socket clientSocket;
 	private PrintWriter pw;
 
@@ -20,7 +24,7 @@ public class Response {
 			pw = new PrintWriter(clsk.getOutputStream(), true);
 		} catch (IOException e) {
 			//e.printStackTrace();
-			System.out.println("创建socket输出流异常！");
+			logger.info("创建socket输出流异常！");
 		}
 	}
 
@@ -90,13 +94,13 @@ public class Response {
 	 * 
 	 */
 	public void outFileList(File file) {
-		System.out.println("开始处理的filePath：" + file.getPath());
-		System.out.println("开始处理的fileName：" + file.getName());
+		logger.info("getPath获得的文件路径（把'/'换成'\'即为window接受的路劲）：" + file.getPath());
+		logger.info("文件名：" + file.getName());
 		pw.println("HTTP/1.1 200 OK");
 		pw.println("Content-Type:text/html;charset=UTF-8");
 		pw.println();
 		pw.println("您好！您访问的目录下的所有文件如下:<br>");
-		
+		new FileOperator().fileList2OutputStream(file, pw);
 		pw.close();
 	}
 	/**
@@ -111,6 +115,7 @@ public class Response {
 		pw.println();
 		try {
 			new FileOperator().file2OutputStream(file, pw);
+			pw.println();
 		}finally{
 			if(pw!=null){
 				pw.close();	

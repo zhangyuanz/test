@@ -3,6 +3,9 @@ package webServer;
 import java.io.File;
 import java.net.Socket;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * 该类是完成逻辑控制，业务流程处理，实现runable接口，专门执行逻辑任务
  * 
@@ -10,6 +13,7 @@ import java.net.Socket;
  *
  */
 public class Handle implements Runnable {
+	final Logger logger = LoggerFactory.getLogger(FileOperator.class);
 	private Socket clientSocket;
 
 	/**
@@ -27,19 +31,19 @@ public class Handle implements Runnable {
 	}
 
 	private void handleRequest() {
-		System.out.println("开始封装客服端请求了...");
+		
 		RequestAnalyze request = new RequestAnalyze(clientSocket);
 		Response response = new Response(clientSocket);
-		// 非GET请求
+	
 		if (request.getMethod() != null && !(request.getMethod().equals("GET"))) {
-			System.out.println("非get方法");
+			logger.info("请求是方法不是GET");
 			response.outNotGet();
 			// thow 异常？
 			return;
 		}
 
 		String requesturl = request.getRequestURL();
-		System.out.println("封装的url：" + requesturl);
+		logger.info("封装的url：" + requesturl);
 		if (requesturl == null) {
 			// 输入空路径，默认显示d盘目录
 			response.outFileList(new File(Config.ROOT + ":/"));
@@ -51,32 +55,29 @@ public class Handle implements Runnable {
 		}
 		// 非D盘
 		String disk = requesturl.substring(1, 2);
-		System.out.println("disk：" + disk);
+		logger.info("disk：" + disk);
 		if (!disk.equals(Config.ROOT)) {
-			System.out.println("访问非D盘");
+			logger.info("访问非D盘");
 			response.outNoPower();
 			return;
 		} else {
 			String path = toPath(requesturl);
-			System.out.println("访问路劲:" + path);
+			logger.info("访问路劲（本机windows能够接受的路劲）:" + path);
 			File file = new File(path);
 			// 只是一个目录
 			if (file.isDirectory()) {
-				System.out.println("访问的资源是一个目录");
+				logger.info("访问的资源是一个目录");
 				response.outFileList(file);
-
 			} else {
 				// 文件不存在
 				if (!file.exists()) {
-					System.out.println("访问的文件不存在");
+					logger.info("访问的文件不存在");
 					response.outNotExist();
 				} else {
 					// 非静态文件
 					if (!contain(Config.STATIC_FILES, file.getName())) {
-						System.out.println("访问的是非静态文件");
 						response.outIllegalType();
 					} else {
-						System.out.println("访问的是静态文件");
 						response.outFile(file);
 					}
 				}
@@ -85,7 +86,8 @@ public class Handle implements Runnable {
 	}
 
 	/**
-	 * 将一个URL转换为路径，并允许用户输入如果是空，即只输入主机ip，则访问默认跟目录，如果是根目录没有添加“/”自动添加
+	 * 将一个URL转换为Windows能够识别的路劲
+	 * 并允许用户输入如果是空，即只输入主机ip，则访问默认跟目录，如果是根目录没有添加“/”自动添加
 	 * 
 	 * <pre>
 	 * localhost =  "D:/"
@@ -111,14 +113,14 @@ public class Handle implements Runnable {
 	 */
 	private boolean contain(String[] fileLastNames, String str) {
 		String lastName = str.substring(str.indexOf(".")+1, str.length());
-		System.out.println("文件后缀名为："+lastName);
+		logger.info("文件后缀名为："+lastName);
 		for (String temp : fileLastNames) {
 			if (temp.equals(lastName)){
-				System.out.println("是静态文件");
+				logger.info("是静态文件");
 				return true;
 			}		
 		}
-		System.out.println("不是静态文件");
+		logger.info("不是静态文件");
 		return false;
 	}
 }

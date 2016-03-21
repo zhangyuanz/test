@@ -3,10 +3,11 @@ package webServer;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * 服务器监听端口的线程类，在创建的同时开始执行run
  * 拥有一个线程池和一个serversocket属性
@@ -15,6 +16,7 @@ import java.util.concurrent.Executors;
  *
  */
 public class HttpServer implements Runnable{
+	final Logger logger = LoggerFactory.getLogger(RequestAnalyze.class);
     private ExecutorService pool;
     private ServerSocket serverSocket;
    /**
@@ -24,7 +26,7 @@ public class HttpServer implements Runnable{
     	try {
 			serverSocket = new ServerSocket(Config.PORT);
 		} catch (IOException e) {
-			System.out.println("无法启动HTTP服务器:"+e.getLocalizedMessage());
+			logger.info("无法启动HTTP服务器:"+e.getLocalizedMessage());
 		}
     	pool = Executors.newFixedThreadPool(64);
     }
@@ -34,7 +36,7 @@ public class HttpServer implements Runnable{
 	public HttpServer(){
 		init();
 		new Thread(this).start();
-        System.out.println("HTTP服务器正在运行,端口:"+Config.PORT);
+		logger.info("HTTP服务器正在运行,端口:"+Config.PORT);
 	}
 	/**
 	 * 该方法轮询端口是否有客服端连接进来，有链接进来则提交给线程池处理
@@ -44,14 +46,12 @@ public class HttpServer implements Runnable{
 		while(true){
 			try {
 				Socket client = serverSocket.accept();
-				SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-				System.out.println(df.format(new Date())+"有客服端连接进来了..");
+				logger.info("有客服端连接进来了，它是："+client.toString());
 				Handle handle = new Handle(client);
 				pool.execute(handle);
 				
 			} catch (IOException e) {
-				//e.printStackTrace();
-				System.out.println("客服端连接异常");
+				logger.info("客服端连接异常");
 			}
 		}
 	}
