@@ -57,7 +57,7 @@ public class RequestAnalyze {
 	 *            是客服端的socket连接
 	 * @throws IOException
 	 */
-	public void analyze(Socket clientSocket) throws IOException {
+	private void analyze(Socket clientSocket) throws IOException {
 
 		BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 		logger.info("开始封装客服端请求了...");
@@ -66,20 +66,16 @@ public class RequestAnalyze {
 		analyzeFirstLine(firstLine);
 
 		String headLine = null;
-		for (int i = 0; i < 8; i++) {
+		while (true) {
 			headLine = in.readLine();
-			logger.info(headLine);
 			analyzeHeadLine(headLine);
-			if (headLine == "\n\r") {
-				break;
-			}
-			if(headLine == null){
+			if (headLine.isEmpty()) {
 				break;
 			}
 		}
 		
 		// String lastLine = in.readLine();
-		// analyzeLastLine(lastLine);
+		//analyzeLastLine(lastLine);
 		logger.info("请求已封装完成");
 	}
 
@@ -88,7 +84,7 @@ public class RequestAnalyze {
 	 * 
 	 * @param firstLine
 	 */
-	public void analyzeFirstLine(String firstLine) {
+	private void analyzeFirstLine(String firstLine) {
 		if(firstLine == null){
 			return;
 		}
@@ -108,33 +104,30 @@ public class RequestAnalyze {
 	 * 
 	 * @param headLine
 	 */
-	public void analyzeHeadLine(String headLine) {
+	private void analyzeHeadLine(String headLine) {
 		if(headLine == null){
 			return;
 		}
-		int max = headLine.length();
-		if (headLine.startsWith("Host")) {
-			host = headLine.substring(6, max);
-			System.out.println("请求的主机是:" + host);
-		}
-		if (headLine.startsWith("User-Agent")) {
-			agent = headLine.substring(12, max);
-			System.out.println("代理：" + agent);
-		}
-		if (headLine.startsWith("Accept:")) {
-			accept = headLine.substring(8, max);
-			System.out.println("接受的类型：" + accept);
-		}
-		if (headLine.startsWith("Accept-Language")) {
-			language = headLine.substring(17, max);
-			System.out.println("接受的语言:" + language);
-		}
-		if (headLine.startsWith("Accept-Encoding")) {
-			encoding = headLine.substring(17, max);
-			System.out.println("接受的编码:" + encoding);
-		}
+		host = cut(headLine,"Host:");
+		agent = cut(headLine,"User-Agent:");
+		accept = cut(headLine,"Accept:");
+		language  = cut(headLine,"Accept-Language:");
+		encoding = cut(headLine,"Accept-Encoding:");
+		connection = cut(headLine,"Connection:");
+		
 	}
-
+	/**
+	 * 截取字符串中关键字以后字符串
+	 * @param line
+	 * @param key
+	 * @return
+	 */
+	private String cut(String line,String key){
+		if(line.startsWith(key)){
+			return line.substring(line.indexOf(":")+1, line.length());
+		}
+		return null;
+	}
 	/**
 	 * 解析http请求的附加参数
 	 * 
