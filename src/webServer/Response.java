@@ -118,7 +118,10 @@ public class Response {
 	 */
 	public void outFile(File file) {
 		pw.println("HTTP/1.1 200 OK");
-		pw.println("Content-Type:application/x-msdownload;charset=UTF-8");
+		//pw.println("Content-Type:application/x-msdownload;charset=UTF-8");
+		pw.println("Content-Disposition:attachment;filename="+file.getName());
+		pw.println("Content-Type:application/octet-stream;charset=UTF-8");
+		//pw.println("Content-Type:text/plain;charset=UTF-8");
 		pw.println();
 		try {
 			new FileOperator().file2OutputStream(file, pw);
