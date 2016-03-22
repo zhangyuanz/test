@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.net.URLDecoder;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,9 +60,10 @@ public class RequestAnalyze {
 	 */
 	private void analyze(Socket clientSocket) throws IOException {
 
-		BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+		BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream(),"UTF-8"));
 		logger.info("开始封装客服端请求了...");
 		String firstLine = in.readLine();// 请求行
+		firstLine = URLDecoder.decode(firstLine, "UTF-8");
 		logger.info("firstLine:"+firstLine);
 		analyzeFirstLine(firstLine);
 
@@ -94,7 +96,6 @@ public class RequestAnalyze {
 		logger.info("请求方法是:" + method);
 		requestURL = firstLine.substring(x, y - 5);
 		logger.info("请求URI是:" + requestURL);
-		
 		protocol = firstLine.substring(y - 4, firstLine.length());
 		logger.info("请求协议是:" + protocol);
 	}
@@ -105,6 +106,7 @@ public class RequestAnalyze {
 	 * @param headLine
 	 */
 	private void analyzeHeadLine(String headLine) {
+		logger.info("HeadLine内容："+headLine);
 		if(headLine == null){
 			return;
 		}

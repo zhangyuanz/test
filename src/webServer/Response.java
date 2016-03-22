@@ -2,7 +2,7 @@ package webServer;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.PrintStream;
 import java.net.Socket;
 
 import org.slf4j.Logger;
@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 public class Response {
 	final Logger logger = LoggerFactory.getLogger(FileOperator.class);
 	private Socket clientSocket;
-	private PrintWriter pw;
+	private PrintStream pw;
 
 	/**
 	 * 此构造方法注入客服端socket
@@ -21,7 +21,7 @@ public class Response {
 	public Response(Socket clsk) {
 		this.setClientSocket(clsk);
 		try {
-			pw = new PrintWriter(clsk.getOutputStream(), true);
+			pw = new PrintStream(clsk.getOutputStream(), true);
 		} catch (IOException e) {
 			//e.printStackTrace();
 			logger.info("创建socket输出流异常！");
@@ -52,6 +52,7 @@ public class Response {
 	public void outNotGet() {
 		pw.println("HTTP/1.1 405 Method Not Allowed");
 		pw.println();
+		pw.close();
 	}
 
 	/**
@@ -60,6 +61,7 @@ public class Response {
 	public void outIllegalType() {
 		pw.println("HTTP/1.1 404 Not Supported fileType");
 		pw.println();
+		pw.close();
 	}
 
 	/**
@@ -69,6 +71,7 @@ public class Response {
 	public void outNoPower() {
 		pw.println("HTTP/1.1 403 Forbidden");
 		pw.println();
+		pw.close();
 	}
 
 	/**
@@ -78,6 +81,7 @@ public class Response {
 	public void outNotExist() {
 		pw.println("HTTP/1.1 404 Not Found");
 		pw.println();
+		pw.close();
 	}
 
 	/**
@@ -87,6 +91,7 @@ public class Response {
 	public void outNotSupportVersion() {
 		pw.println("HTTP/1.1 505 Version Not Supported ");
 		pw.println();
+		pw.close();
 	}
 
 	/**
@@ -95,7 +100,9 @@ public class Response {
 	 */
 	public void outFileList(File file) {
 		logger.info("getPath获得的文件路径（把'/'换成'\'即为window接受的路劲）：" + file.getPath());
-		logger.info("文件名：" + file.getName());
+		logger.info
+		
+		("文件名：" + file.getName());
 		pw.println("HTTP/1.1 200 OK");
 		pw.println("Content-Type:text/html;charset=UTF-8");
 		pw.println();
